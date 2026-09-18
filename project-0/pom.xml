@@ -1,0 +1,9 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.expenseanalyzer</groupId>
+    <artifactId>expense-analyzer</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <properties>
+        <maven.compiler.release>24</maven.compiler.release>
+    </properties>
+</project>
