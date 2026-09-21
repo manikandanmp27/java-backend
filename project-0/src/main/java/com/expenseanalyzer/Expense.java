@@ -48,4 +48,10 @@ public class Expense {
     public void setAmount(BigDecimal amount){
         this.amount=amount;
     }
+
+    @Override 
+    public String toString()
+    {
+        return id+"|"+description+"|"+category+"|"+amount+"|"+date;
+    }
 }
