@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.Comparator;
+import java.time.LocalDate;
 public class ExpenseManager {
     private List<Expense> expenses = new ArrayList<>();
 
@@ -52,5 +53,17 @@ public class ExpenseManager {
                         .sorted(Comparator.comparing(Expense::getAmount))
                         .toList();
     }
+
+    public List<Expense> filterByCategory(Category category)
+    {
+        return expenses.stream()
+                .filter(expense->expense.getCategory()==category)
+                .toList();
+    }
+    public List<Expense> filterByDate(LocalDate date) {
+    return expenses.stream()
+            .filter(expense -> expense.getDate().equals(date))
+            .toList();
+}
 
 }

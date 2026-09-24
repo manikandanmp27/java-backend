@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+import java.time.LocalDate;
 public class Main {
     public static void main(String[] args) {
         ExpenseManager manager = new ExpenseManager();
@@ -26,5 +26,10 @@ public class Main {
         }
         List<Expense> sorted=manager.sortByAmount();
         System.out.println(sorted);
+
+        List<Expense> filterCategory=manager.filterByCategory(Category.FOOD);
+        System.out.println(filterCategory);
+        LocalDate date=LocalDate.of(26,9,24);
+        System.out.println(manager.filterByDate(date));
     }
 }
