@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) {
@@ -18,6 +19,12 @@ public class Main {
         System.out.println("Total:"+manager.calculateTotal());
         Map<Category,List<Expense>> grouped=manager.groupByCategory();
         System.out.println(grouped);
-
+        Optional<Expense> highest=manager.findHighestExpense();
+        if(highest.isPresent())
+        {
+            System.out.println(highest.get());
+        }
+        List<Expense> sorted=manager.sortByAmount();
+        System.out.println(sorted);
     }
 }

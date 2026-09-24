@@ -4,8 +4,9 @@ import java.util.List;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
+import java.util.Comparator;
 public class ExpenseManager {
     private List<Expense> expenses = new ArrayList<>();
 
@@ -40,6 +41,16 @@ public class ExpenseManager {
     public Map<Category,List<Expense>> groupByCategory(){
         return expenses.stream()
                         .collect(Collectors.groupingBy(Expense::getCategory));
+    }
+
+    public Optional<Expense> findHighestExpense(){
+        return expenses.stream()
+                        .max(Comparator.comparing(Expense::getAmount));
+    }
+    public List<Expense> sortByAmount(){
+        return expenses.stream()   
+                        .sorted(Comparator.comparing(Expense::getAmount))
+                        .toList();
     }
 
 }
