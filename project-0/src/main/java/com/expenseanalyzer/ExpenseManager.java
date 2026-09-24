@@ -3,6 +3,8 @@ package com.expenseanalyzer;
 import java.util.List;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ExpenseManager {
     private List<Expense> expenses = new ArrayList<>();
@@ -33,6 +35,11 @@ public class ExpenseManager {
         return expenses.stream()
                 .map(Expense::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public Map<Category,List<Expense>> groupByCategory(){
+        return expenses.stream()
+                        .collect(Collectors.groupingBy(Expense::getCategory));
     }
 
 }

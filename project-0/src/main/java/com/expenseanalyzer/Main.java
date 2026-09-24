@@ -3,6 +3,7 @@ package com.expenseanalyzer;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
@@ -15,6 +16,8 @@ public class Main {
         List<Expense> expenses = manager.getAllExpenses();
         manager.printAllExpenses();
         System.out.println("Total:"+manager.calculateTotal());
+        Map<Category,List<Expense>> grouped=manager.groupByCategory();
+        System.out.println(grouped);
 
     }
 }
