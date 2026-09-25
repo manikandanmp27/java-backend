@@ -6,6 +6,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
 
+    static void handleError(int statusCode) {
+        switch(statusCode)
+        {
+            case 400:
+                System.out.println("Bad Request");
+                break;
+            case 401:
+                System.out.println("Unauthorized");
+                break;
+            case 403:
+                System.out.println("Forbidden");
+                break;
+            case 404:
+                System.out.println("Resource not found");
+                break;
+            case 500:
+                System.out.println("Server error");
+                break;
+            default:
+                System.out.println("Unexpected error:"+statusCode);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         // responsible forcommunicating over HTTP
         HttpClient client = HttpClient.newHttpClient();
@@ -29,8 +52,8 @@ public class Main {
             System.out.println(todo.getId());
             System.out.println(todo.getTitle());
             System.out.println(todo.isCompleted());
-        } else {
-            System.out.println("Error:" + response.statusCode());
+        }else{
+            handleError(response.statusCode());
         }
 
     }
