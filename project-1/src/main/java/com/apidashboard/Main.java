@@ -1,17 +1,20 @@
 package com.apidashboard;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
 
     static void handleError(int statusCode) {
-        switch(statusCode)
-        {
+        switch (statusCode) {
             case 400:
                 System.out.println("Bad Request");
                 break;
@@ -28,37 +31,46 @@ public class Main {
                 System.out.println("Server error");
                 break;
             default:
-                System.out.println("Unexpected error:"+statusCode);
+                System.out.println("Unexpected error:" + statusCode);
         }
     }
-    static List<Todo> getIncompleteTodos(List<Todo> todos)
-    {
-        return todos.stream()
-                 .filter(todo->!todo.isCompleted())
-                 .toList();
-    }
-    static void displayTodos(List<Todo> todos)
-    {
+
+    static void displayTodos(List<Todo> todos) {
+        if (todos.isEmpty()) {
+            System.out.println("No incomplete todos found for this user.");
+            return;
+        }
         System.out.println("Todo List\n");
         todos.stream()
-        .forEach(todo->{
-            System.out.println(todo.getId()+"-"+todo.getTitle()+"- Completed:"+todo.isCompleted());
-        });
+                .forEach(todo -> {
+                    System.out.println(todo.getId() + "-" + todo.getTitle() + "- Completed:" + todo.isCompleted());
+                });
         
+
     }
-    static List<Todo> getTodosByUser(List<Todo> todos,int userId)
+
+    static List<Todo> getIncompleteTodosByUser(List<Todo> todos, int userId) {
+        return todos.stream()
+                .filter(todo -> todo.getUserId() == userId)
+                .filter(todo -> !todo.isCompleted())
+                .toList();
+    }
+    static long countCompletedTodos(List<Todo> todos,int userId)
     {
         return todos.stream()
+        .filter(todo->todo.isCompleted())
         .filter(todo->todo.getUserId()==userId)
-        .toList();
+        .count();
     }
-    static List<Todo> getIncompleteTodosByUser(List<Todo> todos,int userId)
+    static void displaySummary(int userId,long completed,long incomplete)
     {
-        return todos.stream()
-        .filter(todo->todo.getUserId()==userId)
-        .filter(todo->!todo.isCompleted())
-        .toList();
+        System.out.println("===== TODO DASHBOARD =====");
+        System.out.println("User:"+userId);
+        System.out.println("Completed:"+completed);
+        System.out.println("Incomplete:"+incomplete);
+        System.out.println("===== INCOMPLETE TODOS =====");
     }
+
     public static void main(String[] args) throws Exception {
         // responsible forcommunicating over HTTP
         HttpClient client = HttpClient.newHttpClient();
@@ -68,26 +80,38 @@ public class Main {
                 .uri(URI.create("https://jsonplaceholder.typicode.com/todos"))
                 .GET()
                 .build();
-        System.out.println(request.uri());
+        // System.out.println(request.uri());
         // send the request
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         // System.out.println(response.statusCode());
         // System.out.println(response.body());
 
         ObjectMapper mapper = new ObjectMapper();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter User ID:");
+        try {
+            
 
-        if (response.statusCode() == 200) {
+            if (response.statusCode() == 200) {
+                int userId = scanner.nextInt();
+                List<Todo> todos = mapper.readValue(response.body(), new TypeReference<List<Todo>>() {
+                });
+                // System.out.println(todos.size());
+                // List<Todo> incompleteTodos=getIncompleteTodos(todos);
+                // List<Todo> userTodos=getTodosByUser(todos, 1);
+                List<Todo> mainTodos = getIncompleteTodosByUser(todos, userId);
+                displaySummary(userId, countCompletedTodos(todos, userId), mainTodos.size());
+                displayTodos(mainTodos);
+                System.out.println("===============");
+            } else {
+                handleError(response.statusCode());
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid Input,Enter Integer");
+            scanner.nextLine();
+        }
 
-            List<Todo> todos = mapper.readValue(response.body(),new TypeReference<List<Todo>>(){});
-            // System.out.println(todos.size());
-            // List<Todo> incompleteTodos=getIncompleteTodos(todos);
-            // List<Todo> userTodos=getTodosByUser(todos, 1);
-            List<Todo> mainTodos=getIncompleteTodosByUser(todos, 1);
-            displayTodos(mainTodos);
-        }
-        else{
-            handleError(response.statusCode());
-        }
+        scanner.close();
 
     }
 
