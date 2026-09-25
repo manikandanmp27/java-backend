@@ -4,8 +4,26 @@
     <groupId>com.apidashboard</groupId>
     <artifactId>public-api-dashboard</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    <dependencies>
+        <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.19.2</version>
+        </dependency>
+    </dependencies>
     <properties>
         <maven.compiler.release>24</maven.compiler.release>
     </properties>
+    <build>
+    <plugins>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.5.0</version>
+            <configuration>
+                <mainClass>Main</mainClass>
+            </configuration>
+        </plugin>
+    </plugins>
+    </build>
 </project>
