@@ -3,6 +3,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.List;
 
 public class Main {
 
@@ -35,7 +37,7 @@ public class Main {
 
         // creating HTTP request
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://jsonplaceholder.typicode.com/todos/1"))
+                .uri(URI.create("https://jsonplaceholder.typicode.com/todos"))
                 .GET()
                 .build();
         System.out.println(request.uri());
@@ -48,11 +50,18 @@ public class Main {
 
         if (response.statusCode() == 200) {
 
-            Todo todo = mapper.readValue(response.body(), Todo.class);
-            System.out.println(todo.getId());
-            System.out.println(todo.getTitle());
-            System.out.println(todo.isCompleted());
-        }else{
+            List<Todo> todos = mapper.readValue(response.body(),new TypeReference<List<Todo>>(){});
+            // System.out.println(todos.size());
+            todos.stream()
+                 .filter(todo->todo.isCompleted()==false)
+                 .forEach(todo->
+                    {
+                        System.out.println(todo.getId());
+                        System.out.println(todo.getTitle());
+                    }
+                 );
+        }
+        else{
             handleError(response.statusCode());
         }
 
