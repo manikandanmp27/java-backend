@@ -1,3 +1,4 @@
+package com.apidashboard;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -30,7 +31,34 @@ public class Main {
                 System.out.println("Unexpected error:"+statusCode);
         }
     }
-
+    static List<Todo> getIncompleteTodos(List<Todo> todos)
+    {
+        return todos.stream()
+                 .filter(todo->!todo.isCompleted())
+                 .toList();
+    }
+    static void displayTodos(List<Todo> todos)
+    {
+        System.out.println("Todo List\n");
+        todos.stream()
+        .forEach(todo->{
+            System.out.println(todo.getId()+"-"+todo.getTitle()+"- Completed:"+todo.isCompleted());
+        });
+        
+    }
+    static List<Todo> getTodosByUser(List<Todo> todos,int userId)
+    {
+        return todos.stream()
+        .filter(todo->todo.getUserId()==userId)
+        .toList();
+    }
+    static List<Todo> getIncompleteTodosByUser(List<Todo> todos,int userId)
+    {
+        return todos.stream()
+        .filter(todo->todo.getUserId()==userId)
+        .filter(todo->!todo.isCompleted())
+        .toList();
+    }
     public static void main(String[] args) throws Exception {
         // responsible forcommunicating over HTTP
         HttpClient client = HttpClient.newHttpClient();
@@ -52,14 +80,10 @@ public class Main {
 
             List<Todo> todos = mapper.readValue(response.body(),new TypeReference<List<Todo>>(){});
             // System.out.println(todos.size());
-            todos.stream()
-                 .filter(todo->todo.isCompleted()==false)
-                 .forEach(todo->
-                    {
-                        System.out.println(todo.getId());
-                        System.out.println(todo.getTitle());
-                    }
-                 );
+            // List<Todo> incompleteTodos=getIncompleteTodos(todos);
+            // List<Todo> userTodos=getTodosByUser(todos, 1);
+            List<Todo> mainTodos=getIncompleteTodosByUser(todos, 1);
+            displayTodos(mainTodos);
         }
         else{
             handleError(response.statusCode());
