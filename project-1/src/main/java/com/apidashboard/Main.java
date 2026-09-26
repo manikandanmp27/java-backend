@@ -45,7 +45,6 @@ public class Main {
                 .forEach(todo -> {
                     System.out.println(todo.getId() + "-" + todo.getTitle() + "- Completed:" + todo.isCompleted());
                 });
-        
 
     }
 
@@ -55,20 +54,42 @@ public class Main {
                 .filter(todo -> !todo.isCompleted())
                 .toList();
     }
-    static long countCompletedTodos(List<Todo> todos,int userId)
-    {
+
+    static long countCompletedTodos(List<Todo> todos, int userId) {
         return todos.stream()
+                .filter(todo -> todo.isCompleted())
+                .filter(todo -> todo.getUserId() == userId)
+                .count();
+    }
+
+    static void displaySummary(int userId, long completed, long incomplete) {
+        System.out.println("===== TODO DASHBOARD =====");
+        System.out.println("User:" + userId);
+        System.out.println("Completed:" + completed);
+        System.out.println("Incomplete:" + incomplete);
+        System.out.println("===== INCOMPLETE TODOS =====");
+    }
+
+    static void displayCompletedTodos(List<Todo> todos,int userId)
+    {
+        List<Todo> completedTodo=todos.stream()
         .filter(todo->todo.isCompleted())
         .filter(todo->todo.getUserId()==userId)
-        .count();
+        .toList();
+        if(completedTodo.isEmpty())
+        {
+            System.out.println("No completed todos");
+            return;
+        }
+        displayTodos(completedTodo);
     }
-    static void displaySummary(int userId,long completed,long incomplete)
-    {
-        System.out.println("===== TODO DASHBOARD =====");
-        System.out.println("User:"+userId);
-        System.out.println("Completed:"+completed);
-        System.out.println("Incomplete:"+incomplete);
-        System.out.println("===== INCOMPLETE TODOS =====");
+
+    static void showMenu(){
+        System.out.println("===== TODO MENU =====");
+        System.out.println("1. Show incomplete todos\n" + //
+                        "2. Show completed todos\n" + //
+                        "3. Exit\n" + //
+                        "Choose an option:");
     }
 
     public static void main(String[] args) throws Exception {
@@ -90,19 +111,38 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter User ID:");
         try {
-            
 
             if (response.statusCode() == 200) {
                 int userId = scanner.nextInt();
+                
                 List<Todo> todos = mapper.readValue(response.body(), new TypeReference<List<Todo>>() {
                 });
                 // System.out.println(todos.size());
                 // List<Todo> incompleteTodos=getIncompleteTodos(todos);
                 // List<Todo> userTodos=getTodosByUser(todos, 1);
                 List<Todo> mainTodos = getIncompleteTodosByUser(todos, userId);
-                displaySummary(userId, countCompletedTodos(todos, userId), mainTodos.size());
-                displayTodos(mainTodos);
-                System.out.println("===============");
+                // displaySummary(userId, countCompletedTodos(todos, userId), mainTodos.size());
+                // displayTodos(mainTodos);
+                // System.out.println("===============");
+
+                showMenu();
+                int choice=scanner.nextInt();
+
+                switch(choice){
+                    case 1:
+                        displayTodos(mainTodos);
+                        break;
+                    case 2:
+                        displayCompletedTodos(todos, userId);
+                        break;
+                    case 3:
+                        System.out.println("Goodbye!!");
+                        break;
+                    default:
+                        System.out.println("Invalid");
+                }
+
+
             } else {
                 handleError(response.statusCode());
             }
